@@ -1,0 +1,30 @@
+img {
+    width: 150px;
+    height: 100px;
+    padding: 0 15px;
+}
+
+.character {
+    background: white;
+    border: 5px solid;
+    border-color: inherit;
+    border-radius: 2px;
+    text-align: center;
+    float: left;
+    margin-right: 2px;
+
+}
+
+.clearfix{
+   content: '';
+   clear: both;
+   display: table;
+}
+
+#enemies, #defender {
+    border-color: red;
+}
+
+#yourCharacter {
+    border-color: green;
+}
