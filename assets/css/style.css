@@ -1,3 +1,14 @@
+html {
+    height: 100%;
+}
+body {
+    background-image: url('../images/background.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    min-height: 100%;
+}
+
 img {
     width: 150px;
     height: 100px;
@@ -5,7 +16,7 @@ img {
 }
 
 .character {
-    background: white;
+    background: transparent;
     border: 5px solid;
     border-color: inherit;
     border-radius: 2px;
@@ -23,6 +34,7 @@ img {
 
 #enemies, #defender {
     border-color: red;
+    height: 145px;
 }
 
 #yourCharacter {
