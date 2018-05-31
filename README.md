@@ -13,4 +13,4 @@ Swords deal more damage to axes and take less.
 And the same with axes to lances.
 
 This project is a way of practicing javascript and jquery, not css and html to a certain extent.
-I currently maintain this project on github: https://github.com/JMatt21
+I currently maintain this project on github: https://github.com/JMatt21/unit-4-game#unit-4-game
