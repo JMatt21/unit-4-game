@@ -1,8 +1,11 @@
 
-//variables
+//Keeps track of character ID's for divs
 var counter = 0;
-//characters
-var character = [], characterReset = [];
+//these will be stored as a number to point into the character array
+var playerID; 
+var defenderID;
+//array to hold character objects
+var character = [];
 //functions
 function newCharacter(name, health, attack, weaponType, image) {
     var retObject = {
@@ -29,10 +32,18 @@ function addCharacterToDiv(characterObject, divID) {
 }
 
 function combat(player, defender) {
-
-    defender.health -= player.attack; //player always attacks first
+    var playerDamageMult = defenderDamageMult = 1;
+    if ((player.weapon == "sword" && defender.weapon == "axe") || (player.weapon == "axe" && defender.weapon == "lance") || (player.weapon == "lance" && defender.weapon == "sword")) {
+        playerDamageMult = 1.2;
+        defenderDamageMult = 0.8;
+    }
+    else if ((player.weapon == "axe" && defender.weapon == "sword") || (player.weapon == "sword" && defender.weapon == "lance") || (player.weapon == "lance" && defender.weapon == "axe")) {
+        playerDamageMult = 0.8;
+        defenderDamageMult = 1.2;
+    }       
+    defender.health -= player.attack * playerDamageMult; //player always attacks first
     if (defender.health > 0){ //defender shouldn't do damage if they are already dead.
-        player.health -= defender.attack; //defender attacks afterwards
+        player.health -= defender.attack * defenderDamageMult; //defender attacks afterwards
     }
     player.attack += player.counter;  //adds players attack by their counter
     
@@ -42,13 +53,17 @@ function combat(player, defender) {
 
 function reset() {
     console.log("------New Game------");
+    $("#resetbutton").hide();
+    console.log("Reset Button hidden");
+    $("#results").empty();
+    console.log("Hiding results");
     counter = 0;
     console.log("counter set to 0.");
-    character[0] = newCharacter("Oboro", 120, 40, "Spear", "Oboro.PNG");
-    character[1] = newCharacter("Hector", 180, 45, "Axe", "Hector.png");
-    character[2] = newCharacter("Marth", 150, 35, "Sword", "thatguyfromsmash.png");
-    character[3] = newCharacter("Ephraim", 100, 50, "Spear", "Ephraim.png");
-    character[4] = newCharacter("Black Knight", 200, 60, "Sword", "BlackKnight.png");
+    character[0] = newCharacter("Oboro", 100, 30, "lance", "Oboro.PNG");
+    character[1] = newCharacter("Hector", 125, 25, "axe", "Hector.png");
+    character[2] = newCharacter("Marth", 120, 45, "sword", "thatguyfromsmash.png");
+    character[3] = newCharacter("Ephraim", 80, 50, "lance", "Ephraim.png");
+    character[4] = newCharacter("Black Knight", 170, 20, "sword", "BlackKnight.png");
     console.log("characters re-added to character array.");
     $("#yourCharacter").html("");
     $("#enemies").html("");
@@ -62,24 +77,28 @@ function reset() {
 //onstartup
 reset();
 
-var playerID; //these will be stored as a number to point into the character array
-var defenderID;
+
 
 $("document").ready(function () {
     //main functions
-    $("button").on("click", function () {
+    $("#attack").on("click", function () {
         if (character[playerID].health > 0 && character[defenderID].health > 0) {
             combat(character[playerID], character[defenderID]);
             if (character[playerID].health <= 0) {
                 //reset game entirely
                 console.log("Player's character, " + character[playerID].name + ", has died and the game was reset.")
-                reset();
+                $("#results").html("<h1>" + character[playerID].name + " has died. </h1>");
+                $("#resetbutton").show();
             }
             else if (character[defenderID].health <= 0) {
                 //continue to the next dude
                 //remove dead man from defender
                 console.log(character[defenderID].name + " has died and was removed from the #defender div.")
                 $("#defender").html("");
+                if ($("#enemies").html() == ""){//if there are no more opponents then the game is over
+                    $("#results").html("<h1>" + character[playerID].name + " has triumphed over everyone.");
+                    $("#resetbutton").show();
+                }
             }
         }
     });
