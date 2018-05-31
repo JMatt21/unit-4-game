@@ -1,81 +1,97 @@
 
-
-var newCharacter = function(name, health, attack, image) {
+//variables
+var counter = 0;
+//characters
+var character = [], characterReset = [];
+//functions
+function newCharacter(name, health, attack, weaponType, image) {
     var retObject = {
         name: name,
         health: health,
         attack: attack,
-        imgSource: image
+        counter: attack,
+        weapon: weaponType,
+        imgSource: '<img src="assets/images/' + image + '" > '
     }
     return retObject;
-}
+};
 
-function addCharacterToDiv(characterObject) {
+function addCharacterToDiv(characterObject, divID) {
     var newDiv = $("<div>");
-    newDiv.html('<p>' + name + '</p> ' +
-        '<img src="assets/images/' + imgSource + '" > ' +
-        '<p id="' + name + 'healthID">' + health + '</p> </div>');
+    newDiv.html('<h2>' + characterObject.name + '</h2> ' + characterObject.imgSource +
+        '<p>' + characterObject.health + '</p> </div>');
     newDiv.attr({
-        name: name,
-        health: health,
-        attack: attack,
-        counter: attack,
-        class: "character"
+        name: characterObject.name,
+        class: "character",
+        characterID: counter++
     });
     $(divID).append(newDiv);
 }
 
-function divCombat(firstDiv, secondDiv) {
-    firstDiv.attr("health", (firstDiv.attr("health") - secondDiv.attr("counter")));
-    $("#" + firstDiv.attr("name") + "healthID").html(firstDiv.attr("health"));
+function combat(player, defender) {
 
-    secondDiv.attr("health", (secondDiv.attr("health") - firstDiv.attr("attack")));
-    $("#" + secondDiv.attr("name") + "healthID").html(secondDiv.attr("health"));
-
-    firstDiv.attr("attack", parseInt(firstDiv.attr("attack")) + parseInt(firstDiv.attr("counter")));
+    defender.health -= player.attack; //player always attacks first
+    if (defender.health > 0){ //defender shouldn't do damage if they are already dead.
+        player.health -= defender.attack; //defender attacks afterwards
+    }
+    player.attack += player.counter;  //adds players attack by their counter
+    
+    $("#defender > .character > p").text(defender.health); //you can select specific children inside an id/div/etc.. using '>'
+    $("#yourCharacter > .character > p").text(player.health);
 }
 
 function reset() {
+    console.log("------New Game------");
+    counter = 0;
+    console.log("counter set to 0.");
+    character[0] = newCharacter("Oboro", 120, 40, "Spear", "Oboro.PNG");
+    character[1] = newCharacter("Hector", 180, 45, "Axe", "Hector.png");
+    character[2] = newCharacter("Marth", 150, 35, "Sword", "thatguyfromsmash.png");
+    character[3] = newCharacter("Ephraim", 100, 50, "Spear", "Ephraim.png");
+    character[4] = newCharacter("Black Knight", 200, 60, "Sword", "BlackKnight.png");
+    console.log("characters re-added to character array.");
     $("#yourCharacter").html("");
     $("#enemies").html("");
     $("#defender").html("");
-    addCharacter("me", "angrycat.png", 100, 50, "#yourCharacter");
-    addCharacter("matt", "asdasdasd.png", 200, 30, "#yourCharacter");
-    addCharacter("dane", "dinke.png", 300, 20, "#yourCharacter");
+    console.log("All divs emptied.");
+    character.forEach(function (character) {
+        addCharacterToDiv(character, "#yourCharacter");
+        console.log(character.name + " was added.")
+    });
 }
 //onstartup
 reset();
 
-var playerCharacter;
-var enemyCharacter;
+var playerID; //these will be stored as a number to point into the character array
+var defenderID;
+
 $("document").ready(function () {
     //main functions
     $("button").on("click", function () {
-        if (playerCharacter.attr("health") > 0 && enemyCharacter.attr("health") > 0){
-            divCombat(playerCharacter, enemyCharacter);
-            if(playerCharacter.attr("health") <= 0){
+        if (character[playerID].health > 0 && character[defenderID].health > 0) {
+            combat(character[playerID], character[defenderID]);
+            if (character[playerID].health <= 0) {
                 //reset game entirely
+                console.log("Player's character, " + character[playerID].name + ", has died and the game was reset.")
                 reset();
             }
-            else if (enemyCharacter.attr("health") <= 0){
+            else if (character[defenderID].health <= 0) {
                 //continue to the next dude
                 //remove dead man from defender
-                enemyCharacter.remove();
-                console.log($("#defender").html());
+                console.log(character[defenderID].name + " has died and was removed from the #defender div.")
+                $("#defender").html("");
             }
         }
     });
 
     $("#yourCharacter").on("click", ".character", function () {
+        console.log($(this).attr("name") + " was clicked in #yourCharacter div.");
         if ($("#enemies").html() == "") {
+            console.log("Everyone else was moved.");
             var selected = $(this);
-            playerCharacter = selected;
-            // console.log($(this));
-            // console.log($(this).attr("attack"));
+            playerID = selected.attr("characterID");
             $(".character").each(function () {
-                console.log($(this).attr("name"));
-                if ($(this).attr("name") != selected.attr("name")) {
-                    console.log("move");
+                if ($(this).attr("characterID") != selected.attr("characterID")) {
                     $("#enemies").append($(this));
                 }
             });
@@ -83,10 +99,10 @@ $("document").ready(function () {
     });
 
     $("#enemies").on("click", ".character", function () {
+        console.log($(this).attr("name") + " was clicked in #enemies div.");
         if ($("#defender").html() == "") {
-            enemyCharacter = $(this);
-            console.log(enemyCharacter.attr("name"));
-            $("#defender").append(enemyCharacter);
+            defenderID = $(this).attr("characterID");
+            $("#defender").append($(this));
         }
     });
 
