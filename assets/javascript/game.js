@@ -1,32 +1,36 @@
 
 
-function addCharacter(name, imgSource, health, attack, divID) {
+var newCharacter = function(name, health, attack, image) {
+    var retObject = {
+        name: name,
+        health: health,
+        attack: attack,
+        imgSource: image
+    }
+    return retObject;
+}
+
+function addCharacterToDiv(characterObject) {
     var newDiv = $("<div>");
     newDiv.html('<p>' + name + '</p> ' +
         '<img src="assets/images/' + imgSource + '" > ' +
-        '<p>' + health + '</p> </div>');
+        '<p id="' + name + 'healthID">' + health + '</p> </div>');
     newDiv.attr({
         name: name,
-        img: imgSource,
         health: health,
         attack: attack,
         counter: attack,
         class: "character"
     });
     $(divID).append(newDiv);
-    return newDiv;
 }
 
 function divCombat(firstDiv, secondDiv) {
     firstDiv.attr("health", (firstDiv.attr("health") - secondDiv.attr("counter")));
-    firstDiv.html('<p>' + firstDiv.attr("name") + '</p> ' +
-        '<img src="assets/images/' + firstDiv.attr("img") + '" > ' +
-        '<p>' + firstDiv.attr("health") + '</p> </div>');
+    $("#" + firstDiv.attr("name") + "healthID").html(firstDiv.attr("health"));
 
     secondDiv.attr("health", (secondDiv.attr("health") - firstDiv.attr("attack")));
-    secondDiv.html('<p>' + secondDiv.attr("name") + '</p> ' +
-        '<img src="assets/images/' + secondDiv.attr("img") + '" > ' +
-        '<p>' + secondDiv.attr("health") + '</p> </div>');
+    $("#" + secondDiv.attr("name") + "healthID").html(secondDiv.attr("health"));
 
     firstDiv.attr("attack", parseInt(firstDiv.attr("attack")) + parseInt(firstDiv.attr("counter")));
 }
