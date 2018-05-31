@@ -23,6 +23,7 @@ img {
 
 #enemies, #defender {
     border-color: red;
+    height: 145px;
 }
 
 #yourCharacter {
